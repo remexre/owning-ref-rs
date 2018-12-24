@@ -729,6 +729,7 @@ impl<O, T: ?Sized> OwningRefMut<O, T> {
 // OwningHandle
 /////////////////////////////////////////////////////////////////////////////
 
+use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::ops::{Deref, DerefMut};
 
 /// `OwningHandle` is a complement to `OwningRef`. Where `OwningRef` allows
@@ -1005,10 +1006,22 @@ impl<O, T: ?Sized> Clone for OwningRef<O, T>
 unsafe impl<O, T: ?Sized> CloneStableAddress for OwningRef<O, T>
     where O: CloneStableAddress {}
 
+impl<O, T: ?Sized + Display> Display for OwningRef<O, T> {
+    fn fmt(&self, fmt: &mut Formatter) -> FmtResult {
+        self.as_ref().fmt(fmt)
+    }
+}
+
 unsafe impl<O, T: ?Sized> Send for OwningRef<O, T>
     where O: Send, for<'a> (&'a T): Send {}
 unsafe impl<O, T: ?Sized> Sync for OwningRef<O, T>
     where O: Sync, for<'a> (&'a T): Sync {}
+
+impl<O, T: ?Sized + Display> Display for OwningRefMut<O, T> {
+    fn fmt(&self, fmt: &mut Formatter) -> FmtResult {
+        self.as_ref().fmt(fmt)
+    }
+}
 
 unsafe impl<O, T: ?Sized> Send for OwningRefMut<O, T>
     where O: Send, for<'a> (&'a mut T): Send {}
